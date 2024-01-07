@@ -1,4 +1,4 @@
-// repository/songs.go
+// Package repository
 package repository
 
 import (
@@ -31,36 +31,36 @@ func (s *Vendors) GetListPaginated(ctx context.Context, limit, offset int) ([]en
 
 	rows, err := s.db.QueryContext(ctx, query, limit, offset)
 	if err != nil {
-		fmt.Println("Error Query Songs Repository GetListPaginated:", err)
+		fmt.Println("Error Query Vendors Repository GetListPaginated:", err)
 		return nil, err
 	}
 	defer rows.Close()
 
-	var songs []entity.Vendor
+	var vendors []entity.Vendor
 
 	for rows.Next() {
-		var song entity.Vendor
+		var vendor entity.Vendor
 		if err := rows.Scan(
-			&song.ID,
-			&song.VendorName,
-			&song.Email,
-			&song.PhoneNumber,
-			&song.Address,
-			&song.CreatedAt,
-			&song.UpdatedAt,
+			&vendor.ID,
+			&vendor.VendorName,
+			&vendor.Email,
+			&vendor.PhoneNumber,
+			&vendor.Address,
+			&vendor.CreatedAt,
+			&vendor.UpdatedAt,
 		); err != nil {
 			return nil, err
 		}
-		songs = append(songs, song)
+		vendors = append(vendors, vendor)
 	}
 
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
 
-	if songs == nil {
+	if vendors == nil {
 		return nil, entity.ErrNoRows
 	}
 
-	return songs, nil
+	return vendors, nil
 }

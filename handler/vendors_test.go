@@ -20,7 +20,7 @@ func (m *MockVendorService) GetVendors(ctx context.Context, limit, offset int) (
 	return nil, errors.New("mock error")
 }
 
-func TestSongs_GetVendors(t *testing.T) {
+func TestVendors_GetVendors(t *testing.T) {
 	// Setup
 	e := echo.New()
 	req := httptest.NewRequest(http.MethodGet, "/vendors?limit=10&offset=0", nil)
