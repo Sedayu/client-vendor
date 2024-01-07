@@ -10,8 +10,8 @@ import (
 	"github.com/Sedayu/client-vendor/entity"
 )
 
-func TestSongs_GetListPaginated(t *testing.T) {
-	// Create a new SQL mock database connection and Songs instance
+func TestVendors_GetListPaginated(t *testing.T) {
+	// Create a new SQL mock database connection and Vendors instance
 	db, mock, err := sqlmock.New()
 	if err != nil {
 		t.Fatalf("error creating mock DB: %v", err)
@@ -72,14 +72,14 @@ func TestSongs_GetListPaginated(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			mock.ExpectQuery(regexp.QuoteMeta(tc.query)).WillReturnRows(tc.rows)
 
-			songs, err := s.GetListPaginated(context.Background(), tc.limit, tc.offset)
+			vendors, err := s.GetListPaginated(context.Background(), tc.limit, tc.offset)
 
 			if err != tc.expectedErr {
 				t.Fatalf("expected error: %v, got: %v", tc.expectedErr, err)
 			}
 
-			if err == nil && !rowsAreEqual(songs, tc.expectedVendors) {
-				t.Fatalf("expected vendors: %v, got: %v", tc.expectedVendors, songs)
+			if err == nil && !rowsAreEqual(vendors, tc.expectedVendors) {
+				t.Fatalf("expected vendors: %v, got: %v", tc.expectedVendors, vendors)
 			}
 		})
 	}
@@ -90,7 +90,7 @@ func TestSongs_GetListPaginated(t *testing.T) {
 	}
 }
 
-// Helper function to compare two slices of entity.SongWithArtist
+// Helper function to compare two slices of entity.Vendor
 func rowsAreEqual(vendors1, vendors2 []entity.Vendor) bool {
 	if len(vendors1) != len(vendors2) {
 		return false

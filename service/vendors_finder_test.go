@@ -25,21 +25,21 @@ func (m *MockVendorsRepository) GetListPaginated(ctx context.Context, limit, off
 	return m.Vendors, m.ErrorToGive
 }
 
-func TestSongs_GetVendors(t *testing.T) {
+func TestVendors_GetVendors(t *testing.T) {
 	mockRepo := &MockVendorsRepository{
 		Vendors: make([]entity.Vendor, 100),
 	}
 
 	service := NewVendorsFinderProvider(mockRepo)
 
-	// Test the GetSong method
-	songs, err := service.GetVendors(context.Background(), 50, 0)
+	// Test the GetVendors method
+	vendors, err := service.GetVendors(context.Background(), 50, 0)
 	assert.NoError(t, err)
-	assert.NotNil(t, songs)
+	assert.NotNil(t, vendors)
 
 	// Test limit being set to 100 when it's >100
-	songs, err = service.GetVendors(context.Background(), 150, 0)
+	vendors, err = service.GetVendors(context.Background(), 150, 0)
 	assert.NoError(t, err)
-	assert.NotNil(t, songs)
-	assert.NotNil(t, songs)
+	assert.NotNil(t, vendors)
+	assert.NotNil(t, vendors)
 }
