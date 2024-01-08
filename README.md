@@ -59,3 +59,7 @@ All file related to get data from database should be written here.
 ### Service
 
 All business logic.
+
+
+Developer:
+1. Sigit

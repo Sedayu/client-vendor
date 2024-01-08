@@ -10,6 +10,7 @@ import (
 
 type VendorRepositoryInterface interface {
 	GetListPaginated(ctx context.Context, limit, offset int) ([]entity.Vendor, error)
+	CreateVendor(ctx context.Context, vendor entity.Vendor) (int64, error)
 }
 
 type Vendors struct {
@@ -63,4 +64,30 @@ func (s *Vendors) GetListPaginated(ctx context.Context, limit, offset int) ([]en
 	}
 
 	return vendors, nil
+}
+
+// CreateVendor method to add a new vendor to the repository
+func (s *Vendors) CreateVendor(ctx context.Context, vendor entity.Vendor) (int64, error) {
+	query := `
+        INSERT INTO vendors (name, email, phone_number, address, created_at, updated_at)
+        VALUES ($1, $2, $3, $4, $5, $6)
+        RETURNING id
+    `
+
+	var vendorID int64
+	err := s.db.QueryRowContext(ctx, query,
+		vendor.VendorName,
+		vendor.Email,
+		vendor.PhoneNumber,
+		vendor.Address,
+		vendor.CreatedAt,
+		vendor.UpdatedAt,
+	).Scan(&vendorID)
+
+	if err != nil {
+		fmt.Println("Error Inserting Vendor in Repository:", err)
+		return 0, err
+	}
+
+	return vendorID, nil
 }
