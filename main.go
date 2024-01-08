@@ -48,10 +48,11 @@ func main() {
 	vendorRepository := repository.NewVendors(db)
 
 	// Initiate service package
-	vendorService := service.NewVendorsFinderProvider(vendorRepository)
+	vendorFinderService := service.NewVendorsFinderProvider(vendorRepository)
+	vendorCreatorService := service.NewVendorsCretorProvider(vendorRepository)
 
 	// Initiate http handler
-	vendorHandler := handler.NewVendors(vendorService)
+	vendorHandler := handler.NewVendors(vendorFinderService, vendorCreatorService)
 
 	// Initiate HTTP server and register handler
 	e := echo.New()
@@ -59,6 +60,7 @@ func main() {
 		return c.String(http.StatusOK, "OK!")
 	})
 	e.GET("/v1/vendors", vendorHandler.GetVendors)
+	e.POST("/v1/vendors", vendorHandler.CreateVendor)
 
 	// Run HTTP server
 	go func(e *echo.Echo) {
