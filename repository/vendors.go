@@ -4,13 +4,19 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"github.com/Sedayu/client-vendor/entity"
+	"time"
 )
 
 type VendorRepositoryInterface interface {
 	GetListPaginated(ctx context.Context, limit, offset int) ([]entity.Vendor, error)
 	CreateVendor(ctx context.Context, vendor entity.Vendor) (int64, error)
+	UpdateVendor(ctx context.Context, vendor entity.Vendor) error
+	GetVendorByID(ctx context.Context, vendorID int64) (*entity.Vendor, error)
+	UpdateEmail(ctx context.Context, vendorID int, email string, updatedAt time.Time) error
+	DeleteVendor(ctx context.Context, vendorID int) error
 }
 
 type Vendors struct {
@@ -90,4 +96,90 @@ func (s *Vendors) CreateVendor(ctx context.Context, vendor entity.Vendor) (int64
 	}
 
 	return vendorID, nil
+}
+
+// UpdateVendor method to update an existing vendor in the repository
+func (s *Vendors) UpdateVendor(ctx context.Context, vendor entity.Vendor) error {
+	query := `
+        UPDATE vendors
+        SET name = $2, email = $3, phone_number = $4, address = $5, updated_at = $6
+        WHERE id = $1
+    `
+
+	_, err := s.db.ExecContext(ctx, query,
+		vendor.ID,
+		vendor.VendorName,
+		vendor.Email,
+		vendor.PhoneNumber,
+		vendor.Address,
+		vendor.UpdatedAt,
+	)
+
+	if err != nil {
+		fmt.Println("Error Updating Vendor in Repository:", err)
+		return err
+	}
+
+	return nil
+}
+
+// UpdateEmail method to update the email of an existing vendor in the repository
+func (s *Vendors) UpdateEmail(ctx context.Context, vendorID int, email string, updatedAt time.Time) error {
+	query := `
+        UPDATE vendors
+        SET email = $2, updated_at = $3
+        WHERE id = $1
+    `
+
+	_, err := s.db.ExecContext(ctx, query, vendorID, email, updatedAt)
+
+	if err != nil {
+		fmt.Println("Error Updating Email in Repository:", err)
+		return err
+	}
+
+	return nil
+}
+
+func (s *Vendors) GetVendorByID(ctx context.Context, vendorID int64) (*entity.Vendor, error) {
+	query := `
+        SELECT id, name, email, phone_number, address, created_at, updated_at
+        FROM vendors
+        WHERE id = $1
+    `
+
+	var vendor entity.Vendor
+	err := s.db.QueryRowContext(ctx, query, vendorID).Scan(
+		&vendor.ID,
+		&vendor.VendorName,
+		&vendor.Email,
+		&vendor.PhoneNumber,
+		&vendor.Address,
+		&vendor.CreatedAt,
+		&vendor.UpdatedAt,
+	)
+
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, entity.ErrNoRows
+		}
+		fmt.Println("Error Query Vendor by ID in Repository:", err)
+		return nil, err
+	}
+
+	return &vendor, nil
+}
+
+// DeleteVendor method to delete a vendor from the repository
+func (s *Vendors) DeleteVendor(ctx context.Context, vendorID int) error {
+	query := "DELETE FROM vendors WHERE id = $1"
+
+	_, err := s.db.ExecContext(ctx, query, vendorID)
+
+	if err != nil {
+		fmt.Println("Error Deleting Vendor from Repository:", err)
+		return err
+	}
+
+	return nil
 }

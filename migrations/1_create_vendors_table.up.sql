@@ -7,6 +7,7 @@ CREATE TABLE vendors (
      address TEXT,
      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+
 );
 
 -- Create an index on the email column for faster lookups (optional)

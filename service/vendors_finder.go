@@ -8,6 +8,7 @@ import (
 
 type VendorFinderServiceInterface interface {
 	GetVendors(ctx context.Context, limit, offset int) ([]entity.Vendor, error)
+	GetVendorByID(ctx context.Context, vendorID int64) (*entity.Vendor, error)
 }
 
 type VendorsFinderProvider struct {
@@ -34,4 +35,8 @@ func (s *VendorsFinderProvider) GetVendors(ctx context.Context, limit, offset in
 	}
 
 	return s.vendorRepository.GetListPaginated(ctx, limit, offset)
+}
+
+func (s *VendorsFinderProvider) GetVendorByID(ctx context.Context, vendorID int64) (*entity.Vendor, error) {
+	return s.vendorRepository.GetVendorByID(ctx, vendorID)
 }
