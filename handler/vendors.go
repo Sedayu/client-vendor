@@ -101,7 +101,8 @@ func (s *Vendors) CreateVendor(c echo.Context) error {
 
 func (s *Vendors) UpdateVendor(c echo.Context) error {
 	var vendor entity.Vendor
-	if err := c.Bind(&vendor); err != nil {
+	err := c.Bind(&vendor)
+	if err != nil {
 		log.Default().Printf("Error binding vendor data: %v", err)
 		return c.JSON(http.StatusBadRequest, map[string]interface{}{
 			"errors": []map[string]interface{}{
@@ -128,6 +129,15 @@ func (s *Vendors) UpdateVendor(c echo.Context) error {
 
 	err = s.vendorUpdaterService.UpdateVendor(c.Request().Context(), vendor)
 	if err != nil {
+		if errors.Is(err, entity.ErrIDToSmall) {
+			return c.JSON(http.StatusBadRequest, map[string]interface{}{
+				"errors": []map[string]interface{}{
+					{
+						"error": "vendor ID too small",
+					},
+				},
+			})
+		}
 		log.Default().Printf("Error updating vendor: %v", err)
 		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
 			"errors": []map[string]interface{}{

@@ -29,6 +29,10 @@ func (s *VendorsUpdaterProvider) UpdateVendor(ctx context.Context, vendor entity
 		return fmt.Errorf("vendor ID is required for update")
 	}
 
+	if vendor.ID < 2 {
+		return entity.ErrIDToSmall
+	}
+
 	return s.vendorRepository.UpdateVendor(ctx, vendor)
 }
 
