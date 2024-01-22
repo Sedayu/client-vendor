@@ -16,6 +16,7 @@ type VendorRepositoryInterface interface {
 	UpdateVendor(ctx context.Context, vendor entity.Vendor) error
 	GetVendorByID(ctx context.Context, vendorID int64) (*entity.Vendor, error)
 	UpdateEmail(ctx context.Context, vendorID int, email string, updatedAt time.Time) error
+	DeleteVendor(ctx context.Context, vendorID int) error
 }
 
 type Vendors struct {
@@ -167,4 +168,18 @@ func (s *Vendors) GetVendorByID(ctx context.Context, vendorID int64) (*entity.Ve
 	}
 
 	return &vendor, nil
+}
+
+// DeleteVendor method to delete a vendor from the repository
+func (s *Vendors) DeleteVendor(ctx context.Context, vendorID int) error {
+	query := "DELETE FROM vendors WHERE id = $1"
+
+	_, err := s.db.ExecContext(ctx, query, vendorID)
+
+	if err != nil {
+		fmt.Println("Error Deleting Vendor from Repository:", err)
+		return err
+	}
+
+	return nil
 }

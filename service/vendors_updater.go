@@ -11,6 +11,7 @@ import (
 type VendorUpdaterServiceInterface interface {
 	UpdateVendor(ctx context.Context, vendor entity.Vendor) error
 	UpdateVendorEmail(ctx context.Context, vendorID int, email string) error
+	DeleteVendor(ctx context.Context, vendorID int) error
 }
 
 type VendorsUpdaterProvider struct {
@@ -39,4 +40,12 @@ func (s *VendorsUpdaterProvider) UpdateVendorEmail(ctx context.Context, vendorID
 	updatedAt := time.Now()
 
 	return s.vendorRepository.UpdateEmail(ctx, vendorID, email, updatedAt)
+}
+
+func (s *VendorsUpdaterProvider) DeleteVendor(ctx context.Context, vendorID int) error {
+	if vendorID == 0 {
+		return fmt.Errorf("vendor ID is required for deletion")
+	}
+
+	return s.vendorRepository.DeleteVendor(ctx, vendorID)
 }

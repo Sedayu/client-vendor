@@ -240,3 +240,43 @@ func (s *Vendors) UpdateVendorEmail(c echo.Context) error {
 		"message": "vendor email updated successfully",
 	})
 }
+
+func (s *Vendors) DeleteVendor(c echo.Context) error {
+	vendorID, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	if err != nil {
+		log.Default().Printf("Error parsing vendor ID: %v", err)
+		return c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"errors": []map[string]interface{}{
+				{
+					"error": "invalid vendor ID",
+				},
+			},
+		})
+	}
+
+	err = s.vendorUpdaterService.DeleteVendor(c.Request().Context(), int(vendorID))
+	if err != nil {
+		log.Default().Printf("Error deleting vendor: %v", err)
+		if errors.Is(err, entity.ErrNoRows) {
+			return c.JSON(http.StatusNotFound, map[string]interface{}{
+				"errors": []map[string]interface{}{
+					{
+						"error": "vendor not found",
+					},
+				},
+			})
+		}
+
+		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+			"errors": []map[string]interface{}{
+				{
+					"error": "internal server error",
+				},
+			},
+		})
+	}
+
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"message": "vendor deleted successfully",
+	})
+}

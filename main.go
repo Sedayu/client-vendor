@@ -65,6 +65,7 @@ func main() {
 	e.PUT("/v1/vendors/:id", vendorHandler.UpdateVendor)
 	e.GET("/v1/vendors/:id", vendorHandler.GetVendorByID)
 	e.PATCH("/v1/vendors/:id/update-email", vendorHandler.UpdateVendorEmail)
+	e.DELETE("/v1/vendors/:id", vendorHandler.DeleteVendor)
 
 	// Run HTTP server
 	go func(e *echo.Echo) {
