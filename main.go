@@ -50,9 +50,10 @@ func main() {
 	// Initiate service package
 	vendorFinderService := service.NewVendorsFinderProvider(vendorRepository)
 	vendorCreatorService := service.NewVendorsCretorProvider(vendorRepository)
+	vendorUpdaterService := service.NewVendorsUpdaterProvider(vendorRepository)
 
 	// Initiate http handler
-	vendorHandler := handler.NewVendors(vendorFinderService, vendorCreatorService)
+	vendorHandler := handler.NewVendors(vendorFinderService, vendorCreatorService, vendorUpdaterService)
 
 	// Initiate HTTP server and register handler
 	e := echo.New()
@@ -61,6 +62,9 @@ func main() {
 	})
 	e.GET("/v1/vendors", vendorHandler.GetVendors)
 	e.POST("/v1/vendors", vendorHandler.CreateVendor)
+	e.PUT("/v1/vendors/:id", vendorHandler.UpdateVendor)
+	e.GET("/v1/vendors/:id", vendorHandler.GetVendorByID)
+	e.PATCH("/v1/vendors/:id/update-email", vendorHandler.UpdateVendorEmail)
 
 	// Run HTTP server
 	go func(e *echo.Echo) {
